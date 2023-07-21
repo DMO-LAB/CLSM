@@ -9,15 +9,19 @@ Created on Mon Jul 17 13:45:27 2023
 # In[1]:
 
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from MLP import MLP
-from ut.MLP_2 import MLP
-from ut.optimize import optimizerMoE, optimizerMoE2, optimizerMoE3
-from clsm import MoE
-from scipy.integrate import odeint
+import matplotlib.pyplot as plt
 import pickle
+from algorithm.model import MLP
+from algorithm.clsm import CLSM
+from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
+import pandas as pd
+from scipy.integrate import odeint
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -134,7 +138,7 @@ for itrial in range(5):
     
     opt2 = optimizerMoE2(fcn_list = fcn_list)
     
-    moe = MoE(fcn_list, kappa = 0.1, smoothen_alpha = True, n_neighbors = 10, states = data_n)
+    moe = CLSM(fcn_list, kappa = 0.1, smoothen_alpha = True, n_neighbors = 10, states = data_n)
 
     for it in range(200000):
         kk = np.random.permutation(400)[:400]
@@ -146,9 +150,7 @@ for itrial in range(5):
         if any(np.isnan(loss_value) for loss_value in loss_):
             print(f"Error: Loss value is NaN at iteration {it}")
             break
-        
-    
-        
+            
         wp_np = [nwp for nwp in moe.get_num_winning_points()]
         alpha = moe.compute_alpha()#*0 #+ 1
         
@@ -173,13 +175,13 @@ for itrial in range(5):
     
     if overall_error < best_overall_error:
         print("updating models since better trial was found...")
-        filename = './spring_mass_time_models/fcn_list.pkl'
+        filename = 'saved_models/spring_mass_time_models/fcn_list.pkl'
         save_obj(fcn_list, filename)
         
-        filename = './spring_mass_time_models/opt.pkl'
+        filename = 'saved_models/spring_mass_time_models/opt.pkl'
         save_obj(opt2, filename)
         
-        filename = './spring_mass_time_models/moe.pkl'
+        filename = 'saved_models/spring_mass_time_models/moe.pkl'
         save_obj(moe, filename)
         
         best_overall_error = overall_error

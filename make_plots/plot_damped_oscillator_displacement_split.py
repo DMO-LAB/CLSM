@@ -7,20 +7,21 @@ Created on Mon Jul 17 15:59:18 2023
 
 # In[1]:
 
-import sys
 
-sys.path.append('../')
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from MLP import MLP
-from ut.MLP_2 import MLP
-from ut.optimize import optimizerMoE, optimizerMoE2, optimizerMoE3
-from clsm import MoE
 import matplotlib.pyplot as plt
+import pickle
+from algorithm.model import MLP
+from algorithm.clsm import CLSM
+from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
 import pandas as pd
 from scipy.integrate import odeint
-import pickle
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -120,13 +121,13 @@ lam = 1e-6
 
 # In[19]:
 
-filename = '../saved_models/spring_mass_displacement_models/fcn_list.pkl'
+filename = 'saved_models/spring_mass_displacement_models/fcn_list.pkl'
 fcn_list = load_obj(filename)
 
-filename = '../saved_models/spring_mass_displacement_models/opt.pkl'
+filename = 'saved_models/spring_mass_displacement_models/opt.pkl'
 opt = load_obj(filename)
 
-filename = '../saved_models/spring_mass_displacement_models/moe.pkl'
+filename = 'saved_models/spring_mass_displacement_models/moe.pkl'
 moe = load_obj(filename)
 
 if moe.smoothen_alpha == True:

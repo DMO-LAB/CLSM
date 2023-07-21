@@ -9,19 +9,18 @@ Created on Wed Jul 19 18:33:36 2023
 # In[1]:
 
 import sys
-
-sys.path.append('../')
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from MLP import MLP
-from ut.MLP_2 import MLP
-from ut.optimize import optimizerMoE, optimizerMoE2, optimizerMoE3
-from clsm import MoE
 import matplotlib.pyplot as plt
+import pickle
+from algorithm.model import MLP
+from algorithm.clsm import CLSM
+from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
 import pandas as pd
 from scipy.integrate import odeint
-import pickle
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 def save_obj(obj, filename):
@@ -125,20 +124,20 @@ fcn_list = [fcn1, fcn2]
 
 opt2 = optimizerMoE2(fcn_list = fcn_list)
 
-moe = MoE(fcn_list, kappa = 0.1, smoothen_alpha = True, n_neighbors = 10, states = data_n)
+moe = CLSM(fcn_list, kappa = 0.1, smoothen_alpha = True, n_neighbors = 10, states = data_n)
 moe.kappa = 0.1
 
 
 
 # In[ ]:
 
-filename = '../saved_models/spring_mass_time_models/fcn_list.pkl'
+filename = 'saved_models/spring_mass_time_models/fcn_list.pkl'
 fcn_list = load_obj(filename)
 
-filename = '../saved_models/spring_mass_time_models/opt.pkl'
+filename = 'saved_models/spring_mass_time_models/opt.pkl'
 opt = load_obj(filename)
 
-filename = '../saved_models/spring_mass_time_models/moe.pkl'
+filename = 'saved_models/spring_mass_time_models/moe.pkl'
 moe = load_obj(filename)
 
 if moe.smoothen_alpha == True:
@@ -217,7 +216,7 @@ ypred = odeint(ode_pred, y0, t)
 ax = plt.figure(figsize = (10,10)).add_subplot(projection='3d')
 
 param = ["regime 1 (predicted)", "regime 2 (predicted)"]
-colors = ['magenta', 'deepskyblue']
+colors = ['deepskyblue','magenta']
 
 data_pred = np.concatenate([ypred[:,0:1], np.array(t)[:,None]], axis = 1)
 data_pred_n = scaler.fit_transform(data_pred)

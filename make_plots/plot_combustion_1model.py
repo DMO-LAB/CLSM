@@ -6,18 +6,18 @@ Created on Wed Jul 19 16:36:54 2023
 """
 
 import sys
-
-sys.path.append('../')
-
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from MLP import MLP
-from ut.MLP_2 import MLP
-from ut.optimize import optimizerMoE, optimizerMoE2, optimizerMoE3
-from clsm import MoE
 import matplotlib.pyplot as plt
+import pickle
+from algorithm.model import MLP
+from algorithm.clsm import CLSM
+from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
 import pandas as pd
+from scipy.integrate import odeint
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.integrate import odeint
 import warnings
 warnings.filterwarnings('ignore')
@@ -45,11 +45,11 @@ def load_obj(filename):
 
 step = 2
 
-x1 = np.loadtxt('../flamespeed_data/flameSpeed.txt')[0::step,].T.ravel()
-x2 = np.loadtxt('../flamespeed_data/flameSpeed_350')[0::step,].T.ravel()
-x3 = np.loadtxt('../flamespeed_data/flameSpeed_400')[0::step,].T.ravel()
-x4 = np.loadtxt('../flamespeed_data/flameSpeed_450')[0::step,].T.ravel()
-x5 = np.loadtxt('../flamespeed_data/flameSpeed_500')[0::step,].T.ravel()
+x1 = np.loadtxt('flamespeed_data/flameSpeed.txt')[0::step,].T.ravel()
+x2 = np.loadtxt('flamespeed_data/flameSpeed_350')[0::step,].T.ravel()
+x3 = np.loadtxt('flamespeed_data/flameSpeed_400')[0::step,].T.ravel()
+x4 = np.loadtxt('flamespeed_data/flameSpeed_450')[0::step,].T.ravel()
+x5 = np.loadtxt('flamespeed_data/flameSpeed_500')[0::step,].T.ravel()
 
 y = np.vstack([x1,x2,x3,x4,x5]).ravel()
 phi = np.array(list(np.arange(0.6, 1.6, 0.01)[0::step])*10*5) #10 rep pressure, 5 rep T
@@ -76,11 +76,11 @@ Y = Y #+ noise
 
 step = 3
 
-x1 = np.loadtxt('../flamespeed_data/flameSpeed.txt')[1::step,].T.ravel()
-x2 = np.loadtxt('../flamespeed_data/flameSpeed_350')[1::step,].T.ravel()
-x3 = np.loadtxt('../flamespeed_data/flameSpeed_400')[1::step,].T.ravel()
-x4 = np.loadtxt('../flamespeed_data/flameSpeed_450')[1::step,].T.ravel()
-x5 = np.loadtxt('../flamespeed_data/flameSpeed_500')[1::step,].T.ravel()
+x1 = np.loadtxt('flamespeed_data/flameSpeed.txt')[1::step,].T.ravel()
+x2 = np.loadtxt('flamespeed_data/flameSpeed_350')[1::step,].T.ravel()
+x3 = np.loadtxt('flamespeed_data/flameSpeed_400')[1::step,].T.ravel()
+x4 = np.loadtxt('flamespeed_data/flameSpeed_450')[1::step,].T.ravel()
+x5 = np.loadtxt('flamespeed_data/flameSpeed_500')[1::step,].T.ravel()
 
 y = np.vstack([x1,x2,x3,x4,x5]).ravel()
 phi = np.array(list(np.arange(0.6, 1.6, 0.01)[1::step])*10*5) #10 rep pressure, 5 rep T
@@ -103,13 +103,13 @@ num_targets = len(y)
 inp = Xn
 out = Y
 
-filename = '../saved_models/flamespeed_1model/fcn_list.pkl'
+filename = 'saved_models/flamespeed_1model/fcn_list.pkl'
 fcn_list = load_obj(filename)
 
-filename = '../saved_models/flamespeed_1model/opt.pkl'
+filename = 'saved_models/flamespeed_1model/opt.pkl'
 opt = load_obj(filename)
 
-filename = '../saved_models/flamespeed_1model/moe.pkl'
+filename = 'saved_models/flamespeed_1model/moe.pkl'
 moe = load_obj(filename)
 
 

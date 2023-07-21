@@ -4,19 +4,16 @@ Created on Mon Jul 17 20:55:11 2023
 
 @author: oowoyele
 """
-
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from MLP import MLP
-from ut.MLP_2 import MLP
-# from MLP_2 import MLP
-from clsm import MoE
-from ut.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
-# from MoE import MoE
 import matplotlib.pyplot as plt
-import pandas as pd
 import pickle
+from algorithm.model import MLP
+from algorithm.clsm import CLSM
+from algorithm.optimize import optimizerMoE2
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -80,7 +77,7 @@ for itrial in range(5):
 
     #moe = MoE([fcn1,fcn2], kappa = 1.0)
 
-    moe = MoE(fcn_list, kappa = 0.1, smoothen_alpha = True, n_neighbors = 10, states = X)
+    moe = CLSM(fcn_list, kappa = 0.1, smoothen_alpha = True, n_neighbors = 10, states = X)
     
     for it in range(10000):
     
@@ -117,13 +114,13 @@ for itrial in range(5):
     
     if overall_error < best_overall_error:
         print("updating models since better trial was found...")
-        filename = './synthetic_2models/fcn_list.pkl'
+        filename = 'saved_models/synthetic_2models/fcn_list.pkl'
         save_obj(fcn_list, filename)
         
-        filename = './synthetic_2models/opt.pkl'
+        filename = 'saved_models/synthetic_2models/opt.pkl'
         save_obj(opt, filename)
         
-        filename = './synthetic_2models/moe.pkl'
+        filename = 'saved_models/synthetic_2models/moe.pkl'
         save_obj(moe, filename)
         
         best_overall_error = overall_error

@@ -5,21 +5,19 @@ Created on Mon Jul 17 20:25:20 2023
 @author: oowoyele
 """
 
-import sys
 
-sys.path.append('../')
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from MLP import MLP
-from ut.MLP_2 import MLP
-# from MLP_2 import MLP
-from clsm import MoE
-from ut.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
-# from MoE import MoE
 import matplotlib.pyplot as plt
-import pandas as pd
 import pickle
+from algorithm.model import MLP
+from algorithm.clsm import CLSM
+from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
+import pandas as pd
+
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -69,13 +67,13 @@ out = y
 lam = 1e-4
 
 #########################################################################################
-filename = '../saved_models/synthetic_1model/fcn_list.pkl'
+filename = 'saved_models/synthetic_1model/fcn_list.pkl'
 fcn_list = load_obj(filename)
 
-filename = '../saved_models/synthetic_1model/opt.pkl'
+filename = 'saved_models/synthetic_1model/opt.pkl'
 opt = load_obj(filename)
 
-filename = '../saved_models/synthetic_1model/moe.pkl'
+filename = 'saved_models/synthetic_1model/moe.pkl'
 moe = load_obj(filename)
 
 if moe.smoothen_alpha == True:
