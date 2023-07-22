@@ -12,11 +12,15 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
-from algorithm.model import MLP
+from algorithm.create_models import CreateModel
 from algorithm.clsm import CLSM
-from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
+from algorithm.optimizers import OptimizerCLSMAdam
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.integrate import odeint
+
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
@@ -31,6 +35,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import pickle
+
 
 
 def save_obj(obj, filename):
@@ -108,15 +113,15 @@ best_overall_error = 10000
 
 for itrial in range(5):
     
-    fcn1 = MLP(inp, out, annstruct = [3, 3, 1], activation = 'sigmoid', lin_output = True, dtype = torch.float64)
-    fcn2 = MLP(inp, out, annstruct = [3, 3, 1], activation = 'sigmoid', lin_output = True, dtype = torch.float64)
-    fcn3 = MLP(inp, out, annstruct = [3, 3, 1], activation = 'sigmoid', lin_output = True, dtype = torch.float64)
+    fcn1 = CreateModel(inp, out, ann_struct = [3, 3, 1], activation = 'sigmoid', lin_output = True, dtype = torch.float64)
+    fcn2 = CreateModel(inp, out, ann_struct = [3, 3, 1], activation = 'sigmoid', lin_output = True, dtype = torch.float64)
+    fcn3 = CreateModel(inp, out, ann_struct = [3, 3, 1], activation = 'sigmoid', lin_output = True, dtype = torch.float64)
     fcn_list = [fcn1,fcn2,fcn3]
     moe = CLSM(fcn_list, kappa = 1, smoothen_alpha = False)
 
-    opt = optimizerMoE(fcn_list, learning_rate = 0.01)
+    opt = OptimizerCLSMAdam(fcn_list, learning_rate = 0.01)
     
-    for it in range(200000):
+    for it in range(2000):
         
         # alpha_weighted = smoothen_alpha(moe.compute_alpha(), Xn, n_neighbors=5)
         loss_list = moe.compute_weighted_mse(it)

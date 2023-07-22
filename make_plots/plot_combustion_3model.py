@@ -12,11 +12,15 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
-from algorithm.model import MLP
+from algorithm.create_models import CreateModel
 from algorithm.clsm import CLSM
-from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
+from algorithm.optimizers import OptimizerCLSMNewton
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.integrate import odeint
+
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.integrate import odeint
 import warnings
@@ -32,7 +36,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import pickle 
-import pickle
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -157,11 +160,11 @@ ypred = []
 for i in range (0,len(X_test)):
     clus = rf.predict(X_test[i,:].reshape(-1, 3))
     if clus == 0:
-        ypred.append(fcn_list[0].pred_new(X_test[i,:].reshape(-1, 3)))
+        ypred.append(fcn_list[0].predict_new(X_test[i,:].reshape(-1, 3)))
     elif clus==1:
-        ypred.append(fcn_list[1].pred_new(X_test[i,:].reshape(-1, 3)))
+        ypred.append(fcn_list[1].predict_new(X_test[i,:].reshape(-1, 3)))
     else:
-       ypred.append(fcn_list[2].pred_new(X_test[i,:].reshape(-1, 3))) 
+       ypred.append(fcn_list[2].predict_new(X_test[i,:].reshape(-1, 3))) 
     
 ypred = np.array(ypred).reshape(-1,1)
 MSE = mean_squared_error(ypred,y_test)
@@ -186,11 +189,11 @@ def predict(X_test):
     for i in range (0,len(X_test)):
         clus = knn.predict(X_test[i,:].reshape(-1, 3))
         if clus == 0:
-            ypred.append(fcn_list[0].pred_new(X_test[i,:].reshape(-1, 3)))
+            ypred.append(fcn_list[0].predict_new(X_test[i,:].reshape(-1, 3)))
         elif clus==1:
-            ypred.append(fcn_list[1].pred_new(X_test[i,:].reshape(-1, 3)))
+            ypred.append(fcn_list[1].predict_new(X_test[i,:].reshape(-1, 3)))
         elif clus==2:
-            ypred.append(fcn_list[2].pred_new(X_test[i,:].reshape(-1, 3)))
+            ypred.append(fcn_list[2].predict_new(X_test[i,:].reshape(-1, 3)))
         
     return np.array(ypred).reshape(-1,1)
 

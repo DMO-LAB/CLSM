@@ -5,35 +5,38 @@ Created on Wed Jul 19 10:58:23 2023
 @author: oowoyele
 """
 
+"""
+Created on Wed Jul 19 16:36:54 2023
+
+@author: oowoyele
+"""
+
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
-from algorithm.model import MLP
-from algorithm.clsm import CLSM
-from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
 import pandas as pd
-from scipy.integrate import odeint
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.integrate import odeint
 import warnings
-warnings.filterwarnings('ignore')
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score,mean_squared_error
-
+from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import pickle 
 
-import pickle
+# Add path to sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Importing additional necessary modules
+from algorithm.create_models import CreateModel
+from algorithm.clsm import CLSM
+from algorithm.optimizers import OptimizerCLSMNewton
+
+# Disabling warnings
+warnings.filterwarnings('ignore')
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -158,9 +161,9 @@ ypred = []
 for i in range (0,len(X_test)):
     clus = rf.predict(X_test[i,:].reshape(-1, 3))
     if clus == 0:
-        ypred.append(fcn_list[0].pred_new(X_test[i,:].reshape(-1, 3)))
+        ypred.append(fcn_list[0].predict_new(X_test[i,:].reshape(-1, 3)))
     elif clus==1:
-        ypred.append(fcn_list[1].pred_new(X_test[i,:].reshape(-1, 3)))
+        ypred.append(fcn_list[1].predict_new(X_test[i,:].reshape(-1, 3)))
     
 ypred = np.array(ypred).reshape(-1,1)
 MSE = mean_squared_error(ypred,y_test)
@@ -185,9 +188,9 @@ def predict(X_test):
     for i in range (0,len(X_test)):
         clus = knn.predict(X_test[i,:].reshape(-1, 3))
         if clus == 0:
-            ypred.append(fcn_list[0].pred_new(X_test[i,:].reshape(-1, 3)))
+            ypred.append(fcn_list[0].predict_new(X_test[i,:].reshape(-1, 3)))
         elif clus==1:
-            ypred.append(fcn_list[1].pred_new(X_test[i,:].reshape(-1, 3)))
+            ypred.append(fcn_list[1].predict_new(X_test[i,:].reshape(-1, 3)))
         
     return np.array(ypred).reshape(-1,1)
 

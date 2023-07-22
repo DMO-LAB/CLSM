@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed Jul 19 16:36:54 2023
 
@@ -7,31 +6,30 @@ Created on Wed Jul 19 16:36:54 2023
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
-from algorithm.model import MLP
-from algorithm.clsm import CLSM
-from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
 import pandas as pd
-from scipy.integrate import odeint
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from scipy.integrate import odeint
 import warnings
-warnings.filterwarnings('ignore')
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score,mean_squared_error
-
+from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import pickle 
+
+# Add path to sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Importing additional necessary modules
+from algorithm.create_models import CreateModel
+from algorithm.clsm import CLSM
+from algorithm.optimizers import OptimizerCLSMNewton
+
+# Disabling warnings
+warnings.filterwarnings('ignore')
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -52,7 +50,7 @@ x4 = np.loadtxt('flamespeed_data/flameSpeed_450')[0::step,].T.ravel()
 x5 = np.loadtxt('flamespeed_data/flameSpeed_500')[0::step,].T.ravel()
 
 y = np.vstack([x1,x2,x3,x4,x5]).ravel()
-phi = np.array(list(np.arange(0.6, 1.6, 0.01)[0::step])*10*5) #10 rep pressure, 5 rep T
+phi = np.array(list(np.arange(0.6, 1.6, 0.01)[0::step])*10*5) 
 P0 = np.array(list(np.repeat(np.linspace(1,10,10),len(x1)/10))*5) 
 T0 = np.array([298,350,400,450,500])
 T0 = np.repeat(T0,len(x1))
@@ -70,10 +68,6 @@ Y = (y - ymin) / (ymax - ymin)  # normalize source term to range 0-1
 Xn = Xn
 noise_factor = 3e-2# Adjust the noise factor as desired
 noise = np.random.normal(0, noise_factor, size=Y.shape)
-Y = Y #+ noise
-
-
-
 step = 3
 
 x1 = np.loadtxt('flamespeed_data/flameSpeed.txt')[1::step,].T.ravel()
@@ -96,7 +90,7 @@ Y_test = (y_test - ymin) / (ymax - ymin)  # normalize source term to range 0-1
 
 #noise_factor = 3e-3# Adjust the noise factor as desired
 noise = np.random.normal(0, noise_factor, size=Y_test.shape)
-y_test = Y_test# + noise
+y_test = Y_test
 
 num_inputs = len(X)
 num_targets = len(y)
@@ -125,7 +119,7 @@ df['phi'] = Xn[:,2]
 ## Test result for 2 experts
 ypred = []
 for i in range (0,len(X_test)):
-    ypred.append(fcn_list[0].pred_new(X_test[i,:].reshape(-1, 3)))
+    ypred.append(fcn_list[0].predict_new(X_test[i,:].reshape(-1, 3)))
     
 ypred = np.array(ypred).reshape(-1,1)
 MSE = mean_squared_error(ypred,y_test)
@@ -147,14 +141,12 @@ unique_T = np.unique(df1['T'])[::-1]
 def predict(X_test):
     ypred = []
     for i in range (0,len(X_test)):
-        ypred.append(fcn_list[0].pred_new(X_test[i,:].reshape(-1, 3)))
+        ypred.append(fcn_list[0].predict_new(X_test[i,:].reshape(-1, 3)))
         
     return np.array(ypred).reshape(-1,1)
 
 #print(X_test[i,:].reshape(-1, 3))
 Xt_unnorm = X_test*(xmax - xmin) + xmin
-
-#print(Xt_unnorm)
 
 ax = plt.figure(figsize = (10,10)).add_subplot(projection='3d')
 

@@ -9,15 +9,9 @@ Created on Mon Jul 17 20:25:20 2023
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
-from algorithm.model import MLP
-from algorithm.clsm import CLSM
-from algorithm.optimize import optimizerMoE,optimizerMoE2,optimizerMoE3 
-import pandas as pd
-
 
 def save_obj(obj, filename):
     """Saves a Python object to a file using pickle."""
@@ -86,16 +80,12 @@ else:
 fig = plt.figure(figsize = (12,8))
 ax = fig.gca()
 
-# Create scatter plots for the two regimes with different colors and markers
-#scatter1 = ax.plot(X[inds1,0], fcn1.pred()[inds1], marker='o', markeredgewidth = 1.5, markersize = 12, color='lightsteelblue', markeredgecolor='black', label="Regime 1 (specialized model)")
-#scatter2 = ax.plot(X[inds2,0], fcn2.pred()[inds2], marker='s', markeredgewidth = 1.5, markersize = 12, color='violet', markeredgecolor='black', label="Regime 2 (specialized model)")
-ypred = fcn_list[0].pred().detach().numpy()
+ypred = fcn_list[0].predict().detach().numpy()
 scatter3 = ax.plot(X[:,0], ypred, '^', markeredgewidth = 1.5, markersize = 20, color='wheat', markeredgecolor='black', label="global model")
 
 actual = ax.plot(x, y, "-", color = "midnightblue", linewidth = 4.5, label = "true function")
 
 # Create a legend to label the different regimes
-#legend = plt.legend(fontsize=28, loc='upper left')
 leg = plt.legend(fontsize = 28)
 leg.get_frame().set_edgecolor('k')
 
